@@ -1,4 +1,5 @@
 use rusqlite::{Connection, params};
+use rusqlite::{params_from_iter, types::Value};
 use serde::Deserialize;
 
 use std::fs;
@@ -33,7 +34,9 @@ pub fn run()
             unarchive_category,
             delete_category,
             add_expense,
-            get_expense_years
+            get_expense_years,
+            get_expense_months,
+            get_expenses
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -107,6 +110,23 @@ struct ExpensesStruct {
     day: Option<i64>
 }
 
+// for expenditures page sorting
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ExpenseFilters {
+    is_all_time: bool,
+    year: Option<i32>,
+    month: Option<i32>,
+    day: Option<i32>,
+    category_id: Option<i32>,
+    is_any_amount: Option<bool>,
+    max_amount: Option<i64>,
+    min_amount: Option<i64>,
+    is_no_note_only: bool,
+    sort_by: String,
+    note: Vec<String>,
+}
+
 
 // -------------- DASHBOARD PAGE FUNCTIONS -------------- //
 
@@ -139,7 +159,6 @@ fn get_total_budget(app: tauri::AppHandle, month: i32, year: i32) -> Result<i64,
 
 
 // -------------- CATEGORIES AND BUDGETS PAGE FUNCTIONS -------------- //
-
 
 // adding a category with a budget to the database
 #[tauri::command]
@@ -200,7 +219,6 @@ fn add_category_without_budget(app: tauri::AppHandle, category: CategoryWithBudg
 
     Ok(())
 }
-
 
 // get the categories with or without budgets from the database
 #[tauri::command]
@@ -431,7 +449,6 @@ fn new_month_budget_transfer(app: tauri::AppHandle) -> Result<(), String>
     Ok(())
 }
 
-
 #[tauri::command]
 fn archive_category(app: tauri::AppHandle, category: CategoryWithBudget) -> Result<(), String>
 {
@@ -498,7 +515,6 @@ fn unarchive_category(app: tauri::AppHandle, category: CategoryWithBudget) -> Re
 
     Ok(())
 }
-
 
 #[tauri::command]
 fn delete_category(app: tauri::AppHandle, category: CategoryWithBudget) -> Result<(), String>
@@ -590,7 +606,6 @@ fn add_expense(app: tauri::AppHandle, expense: ExpensesStruct) -> Result<(), Str
     Ok(()) 
 }
 
-
 // get the years where there are expense entries
 #[tauri::command]
 fn get_expense_years(app: tauri::AppHandle) -> Result<Vec<i32>, String>
@@ -598,7 +613,7 @@ fn get_expense_years(app: tauri::AppHandle) -> Result<Vec<i32>, String>
     // get database connection
     let conn = get_connection(&app)?;
 
-    // count the number of archived categories
+    // get all the years where there's expenditures
     let mut statement= conn.prepare(
         "SELECT DISTINCT exp_year
          FROM EXPENDITURES
@@ -622,4 +637,171 @@ fn get_expense_years(app: tauri::AppHandle) -> Result<Vec<i32>, String>
     Ok(years)
 }
 
+// get the months where there are expense entries for a specific year
+#[tauri::command]
+fn get_expense_months(app: tauri::AppHandle, year: i32) -> Result<Vec<i32>, String>
+{
+    // get database connection
+    let conn = get_connection(&app)?;
 
+    // get the months where there's expenditures for the year
+    let mut statement = conn.prepare(
+    "SELECT DISTINCT exp_month
+     FROM EXPENDITURES
+     WHERE exp_year = ?1
+     ORDER BY exp_month DESC"
+    )
+    .map_err(|error| error.to_string())?;
+
+    let rows = statement.query_map(params![year], |row| row.get::<_, i32>(0))
+        .map_err(|error| error.to_string())?;
+
+    // collect the years into a vectors
+    let mut months = Vec::new();
+
+    for row in rows
+    {
+        let month = row.map_err(|error| error.to_string())?;
+        months.push(month);
+    }
+
+    Ok(months)
+}
+
+// get all the expenditures
+#[tauri::command]
+fn get_expenses(app: tauri::AppHandle, filters: ExpenseFilters) -> Result<Vec<ExpensesStruct>, String>
+{
+    // start query and parameters list
+    let mut query = String::from(
+        "SELECT
+            CATEGORIES.cat_id,
+            CATEGORIES.cat_name,
+            EXPENDITURES.exp_id,
+            EXPENDITURES.exp_amount,
+            EXPENDITURES.exp_note,
+            EXPENDITURES.exp_year,
+            EXPENDITURES.exp_month,
+            EXPENDITURES.exp_day
+        FROM EXPENDITURES
+        JOIN CATEGORIES ON EXPENDITURES.cat_id = CATEGORIES.cat_id
+        WHERE 1 = 1 "
+    );
+    let mut parameters: Vec<Value> = Vec::new();
+
+    // date filtering
+    if !filters.is_all_time
+    {
+        // add year to sql
+        query.push_str("AND exp_year = ? ");
+        parameters.push(Value::Integer(filters.year.unwrap() as i64));
+
+        // check if month exists
+        if filters.month.is_some()
+        {
+            query.push_str("AND exp_month = ? ");
+            parameters.push(Value::Integer(filters.month.unwrap() as i64));
+        }
+
+        // check if day exists
+        if filters.day.is_some()
+        {
+            query.push_str("AND exp_day = ? ");
+            parameters.push(Value::Integer(filters.day.unwrap() as i64));
+        }
+    }
+
+    // category filtering
+    if filters.category_id.is_some()
+    {
+        query.push_str("AND cat_id = ? ");
+        parameters.push(Value::Integer(filters.category_id.unwrap() as i64));
+    }
+
+    // amount filtering
+    if !filters.is_any_amount.is_some()
+    {
+        if filters.max_amount.is_some()
+        {
+            query.push_str("AND exp_amount <= ? ");
+            parameters.push(Value::Integer(filters.max_amount.unwrap() as i64));
+        }
+        if filters.min_amount.is_some()
+        {
+            query.push_str("AND exp_amount >= ? ");
+            parameters.push(Value::Integer(filters.min_amount.unwrap() as i64));
+        }
+    }
+
+    // note filtering
+    if !filters.is_no_note_only && !filters.note.is_empty()
+    {
+        query.push_str("AND (");
+
+        // add each keyword at a time using OR in between
+        for (index, keyword) in filters.note.iter().enumerate()
+        {
+            if index > 0
+            {
+                query.push_str(" OR ");
+            }
+
+            query.push_str("exp_note LIKE ?");
+            parameters.push(Value::Text(format!("%{}%", keyword)));
+        }
+
+        query.push_str(") ");
+    }
+    else if filters.is_no_note_only
+    {
+        query.push_str("AND exp_note IS NULL ");
+    }
+
+    // ordering
+    if filters.sort_by == "date-old-first"
+    {
+        query.push_str("ORDER BY exp_year ASC, exp_month ASC, exp_day ASC");
+    }
+    else if filters.sort_by == "date-new-first"
+    {
+        query.push_str("ORDER BY exp_year DESC, exp_month DESC, exp_day DESC");
+    }
+    else if filters.sort_by == "amount-greatest-first"
+    {
+        query.push_str("ORDER BY exp_amount DESC");
+    }
+    else if filters.sort_by == "amount-least-first"
+    {
+        query.push_str("ORDER BY exp_amount ASC");
+    }
+
+    // get the connection to the database
+    let conn = get_connection(&app)?;
+    let mut statement = conn.prepare(&query).map_err(|e| e.to_string())?;
+
+    // get the expenditures from the database
+    let expense_rows = statement.query_map
+    (
+        params_from_iter(parameters),
+        |row|
+        {
+            Ok(ExpensesStruct {
+                c_id: row.get(0)?,
+                name: row.get(1)?,
+                e_id: row.get(2)?,
+                amount: row.get(3)?,
+                note: row.get(4)?,
+                year: row.get(5)?,
+                month: row.get(6)?,
+                day: row.get(7)?,
+            })
+        }
+    ).map_err(|e| e.to_string())?;
+
+    // turn rows into a vector and return it
+    let expenses: Vec<ExpensesStruct> = expense_rows
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| e.to_string())?;
+
+    Ok(expenses)
+}

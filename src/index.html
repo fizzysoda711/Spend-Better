@@ -259,9 +259,7 @@
           </div>
 
           <div class="expenses-list">
-            <div class="expenses-list-item">
-              
-            </div>
+            
           </div>
 
           <!-- expenses sorting section -->
@@ -287,7 +285,7 @@
             </div>
 
             <!-- expenses sorting dropdowns + selections -->
-            <div class="expenses-sorting-choices  column">
+            <div class="expenses-sorting-choices column">
 
               <!-- expenses sorting by date dropdown -->
               <button class="expenses-sorting-category date-exepenses-sorting row vertical center">
@@ -320,15 +318,15 @@
                     </div>
                   <!-- by specific month -->
                   <label class="expenses-sorting-subheader">
-                    <input type="radio" name="expenses-sorting-filter-by-date" value="specific-month">
+                    <input type="radio" name="expenses-sorting-filter-by-date" value="specific-month" checked>
                     By month
                   </label>
-                    <div class="hidden sorting-selection-options sorting-selection-options-specific-year-for-month">
+                    <div class="sorting-selection-options sorting-selection-options-specific-year-for-month">
                       <select class="expense-sorting-dropdown expense-sorting-year-for-month-dropdown">
                         <option class="sorting-year-for-month-input" value="">Choose a year</option>
                       </select>
                     </div>
-                    <div class="hidden sorting-selection-options sorting-selection-options-specific-month">
+                    <div class="sorting-selection-options sorting-selection-options-specific-month">
                       <select class="expense-sorting-dropdown expense-sorting-month-dropdown">
                         <option class="sorting-month-input" value="">Choose a month</option>
                       </select>
@@ -336,14 +334,14 @@
                   <!-- by specific day -->
                   <label class="expenses-sorting-subheader">
                     <input type="radio" name="expenses-sorting-filter-by-date" value="specific-day">
-                    Specific date
+                    Specific day
                   </label>
                     <input class="hidden expense-sorting-date" type="date">
             
 
                 <p class="expenses-sorting-section-header">Order by Date</p>
                   <label class="expenses-sorting-subheader">
-                    <input type="radio" name="expenses-sorting-order-by" value="date-old-first checked">
+                    <input type="radio" name="expenses-sorting-order-by" value="date-old-first" checked>
                     Newest first
                   </label>
                   <label class="expenses-sorting-subheader">
@@ -352,6 +350,8 @@
                   </label>
 
                 <p class="expenses-sorting-info-subheader">*Note: Only one order option can be selected at once</p>
+
+                <p class="expense-sorting-error-message expense-sorting-by-date-error-message">Error: Unspecified</p>
               </div>
 
               <!-- expenses sorting by category dropdown -->
@@ -389,14 +389,20 @@
               <div class="expenses-sorting-selection-menu expenses-sorting-amount-selection-menu column hidden">
                 <p class="expenses-sorting-section-header">Filter by Amount</p>
                   <label class="expenses-sorting-subheader">
-                    <input type="radio" name="expenses-sorting-filter-by-amount" value="all-amounts checked">
+                    <input type="radio" name="expenses-sorting-filter-by-amount" value="all-amounts" checked>
                     Any amount
                   </label>
                   <label class="expenses-sorting-subheader">
                     <input type="radio" name="expenses-sorting-filter-by-amount" value="specific-range">
                     Custom range
                   </label>
-
+                  <p class="hidden min-max-sorting-labels min-sorting-label vertical-center">Min: 
+                    <input class="expense-sorting-min-amount vertical-center" type="text" inputmode="numeric" placeholder="enter min amount">
+                  </p>
+                  <p class="hidden min-max-sorting-labels max-sorting-label vertical-center">Max: 
+                    <input class="expense-sorting-max-amount vertical-center" type="text" inputmode="numeric" placeholder="enter max amount">
+                  </p>
+                  
                 <p class="expenses-sorting-section-header">Order by Amount</p>
                   <label class="expenses-sorting-subheader">
                     <input type="radio" name="expenses-sorting-order-by" value="amount-greatest-first">
@@ -408,6 +414,8 @@
                   </label>
 
                   <p class="expenses-sorting-info-subheader">*Note: Only one order option can be selected at once</p>
+
+                  <p class="hidden expense-sorting-error-message expense-sorting-by-amount-error-message">Error: Unspecified</p>
               </div>
 
               <!-- expenses sorting by note -->
@@ -426,7 +434,7 @@
                 <p class="expenses-sorting-section-header">Search by Note</p>
                   <textarea 
                     class="sort-expenses-note" 
-                    placeholder="Search keywords separated by commas"
+                    placeholder="Search words or phrases separated by commas"
                     maxlength="400"></textarea>
                   <label class="expenses-sorting-subheader">
                     <input type="checkbox" name="expenses-sorting-filter-by-note" value="no-note">

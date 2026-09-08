@@ -33,11 +33,11 @@ window.addEventListener("DOMContentLoaded", async () => {
         console.log("budget transfer failed:", error);
     }
     
-    loadCategories(); // load the categories
     updateDash(); // update the dashboard in home
+    loadCategories(); // load the categories
     loadArchivedCategories(); // load archived categories if any
-    loadAllGraphics(); // load all graphics
     loadExpenses(); // load expenses
+    loadAllGraphics(); // load all graphics
 
 
     setInterval(updateDash, 60000); // update the dashboard every minute
