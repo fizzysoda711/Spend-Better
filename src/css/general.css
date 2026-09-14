@@ -1,7 +1,7 @@
 /* Make date inputs dark mode */
 input[type="date"] 
 {
-  color-scheme: dark;
+    color-scheme: dark;
 }
 
 /* Controls the whole screen */
@@ -75,6 +75,11 @@ body
     display: none !important;
 }
 
+.invisible
+{
+    visibility: hidden;
+}
+
 .title
 {
     margin-left: 30px;
@@ -86,7 +91,7 @@ body
 .button
 {
     background-color: transparent;
-    border-color: var(--color-accent-light);
+    border-color: none;
 
     color: var(--color-text);
 

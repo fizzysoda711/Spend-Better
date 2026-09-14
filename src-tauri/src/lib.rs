@@ -36,7 +36,9 @@ pub fn run()
             add_expense,
             get_expense_years,
             get_expense_months,
-            get_expenses
+            get_expenses,
+            edit_expense,
+            delete_expense
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -102,6 +104,7 @@ struct CategoryWithBudget {
 struct ExpensesStruct {
     c_id: Option<i64>,
     name: Option<String>,
+    color: Option<String>,
     e_id: Option<i64>,
     amount: i64,
     note: Option<String>,
@@ -415,34 +418,29 @@ fn new_month_budget_transfer(app: tauri::AppHandle) -> Result<(), String>
     let cur_month = today.month() as i32;
     let cur_year = today.year();
 
-    // get the previous month
-    let mut prev_month = cur_month - 1;
-    let mut prev_year = cur_year;
-
-    if prev_month == 0
-    {
-        prev_month = 12;
-        prev_year -= 1;
-    }
 
     // get connection to the database
     let conn = get_connection(&app)?;
 
     conn.execute
     (
-        "INSERT OR IGNORE INTO BUDGETS (bdgt_month, bdgt_year, cat_id, bdgt_amount)
+        "WITH most_recent_budget_month AS (
+            SELECT bdgt_year, bdgt_month
+            FROM BUDGETS
+            ORDER BY bdgt_year DESC, bdgt_month DESC
+            LIMIT 1
+        )
+        INSERT INTO BUDGETS (bdgt_month, bdgt_year, cat_id, bdgt_amount)
         SELECT
             ?1,
             ?2,
             BUDGETS.cat_id,
             BUDGETS.bdgt_amount
         FROM BUDGETS
-        JOIN CATEGORIES
-            ON CATEGORIES.cat_id = BUDGETS.cat_id
-        WHERE BUDGETS.bdgt_month = ?3
-        AND BUDGETS.bdgt_year = ?4
-        AND CATEGORIES.is_archived = 0",
-        params![cur_month, cur_year, prev_month, prev_year]
+        JOIN most_recent_budget_month
+            ON BUDGETS.bdgt_year = most_recent_budget_month.bdgt_year
+            AND BUDGETS.bdgt_month = most_recent_budget_month.bdgt_month;",
+        params![cur_month, cur_year]
     )
     .map_err(|error| error.to_string())?;
 
@@ -469,21 +467,6 @@ fn archive_category(app: tauri::AppHandle, category: CategoryWithBudget) -> Resu
         SET is_archived = 1
         WHERE cat_id = ?1",
         params![catid]
-    )
-    .map_err(|error| error.to_string())?;
-
-    // get the date to delete the budget for the current month
-    let today = Local::now();
-    let month = today.month() as i32;
-    let year = today.year();
-
-    tx.execute
-    (
-        "DELETE FROM BUDGETS
-        WHERE cat_id = ?1
-        AND bdgt_month = ?2
-        AND bdgt_year = ?3",
-        params![catid, month, year]
     )
     .map_err(|error| error.to_string())?;
 
@@ -677,6 +660,7 @@ fn get_expenses(app: tauri::AppHandle, filters: ExpenseFilters) -> Result<Vec<Ex
         "SELECT
             CATEGORIES.cat_id,
             CATEGORIES.cat_name,
+            CATEGORIES.cat_color,
             EXPENDITURES.exp_id,
             EXPENDITURES.exp_amount,
             EXPENDITURES.exp_note,
@@ -788,12 +772,13 @@ fn get_expenses(app: tauri::AppHandle, filters: ExpenseFilters) -> Result<Vec<Ex
             Ok(ExpensesStruct {
                 c_id: row.get(0)?,
                 name: row.get(1)?,
-                e_id: row.get(2)?,
-                amount: row.get(3)?,
-                note: row.get(4)?,
-                year: row.get(5)?,
-                month: row.get(6)?,
-                day: row.get(7)?,
+                color: row.get(2)?,
+                e_id: row.get(3)?,
+                amount: row.get(4)?,
+                note: row.get(5)?,
+                year: row.get(6)?,
+                month: row.get(7)?,
+                day: row.get(8)?,
             })
         }
     ).map_err(|e| e.to_string())?;
@@ -804,4 +789,79 @@ fn get_expenses(app: tauri::AppHandle, filters: ExpenseFilters) -> Result<Vec<Ex
         .map_err(|e| e.to_string())?;
 
     Ok(expenses)
+}
+
+// edit an expense
+#[tauri::command]
+fn edit_expense(app: tauri::AppHandle, expenses: ExpensesStruct) -> Result<(), String>
+{
+    // connect to the database
+    let conn = get_connection(&app)?;
+
+    if expenses.note.is_none()
+    {
+        conn.execute
+        (
+            "UPDATE EXPENDITURES
+            SET exp_amount = ?1,
+                exp_year = ?2,
+                exp_month = ?3,
+                exp_day = ?4,
+                cat_id = ?5,
+                exp_note = NULL
+            WHERE exp_id = ?6",
+            params![
+                expenses.amount, 
+                expenses.year, 
+                expenses.month,
+                expenses.day,
+                expenses.c_id,
+                expenses.e_id
+            ],
+        )
+        .map_err(|error| error.to_string())?; 
+    }
+    else
+    {
+        conn.execute
+        (
+            "UPDATE EXPENDITURES
+            SET exp_amount = ?1,
+                exp_year = ?2,
+                exp_month = ?3,
+                exp_day = ?4,
+                cat_id = ?5,
+                exp_note = ?6
+            WHERE exp_id = ?7",
+            params![
+                expenses.amount, 
+                expenses.year, 
+                expenses.month,
+                expenses.day,
+                expenses.c_id,
+                expenses.note,
+                expenses.e_id
+            ],
+        )
+        .map_err(|error| error.to_string())?;
+    }
+
+    Ok(())
+}
+
+// delete an expense
+#[tauri::command]
+fn delete_expense(app: tauri::AppHandle, expense: ExpensesStruct) -> Result<(), String>
+{
+    let conn = get_connection(&app)?;
+
+    conn.execute
+    (
+        "DELETE FROM EXPENDITURES
+        WHERE exp_id = ?1",
+        params![expense.e_id]
+    )
+    .map_err(|error| error.to_string())?;
+
+    Ok(())
 }

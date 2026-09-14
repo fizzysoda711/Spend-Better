@@ -10,9 +10,10 @@ import { updateDash } from "./dashboard_page.js";
 
 import { loadCategories, loadArchivedCategories } from "./categories_page.js";
 
-import { loadExpenses } from "./expenditures_page.js";
+import { loadExpenses, setSortingSelections, defaultExpenseFilters } from "./expenditures_page.js";
 
 import "./expenditures_page.js";
+
 
 
 
@@ -36,7 +37,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     updateDash(); // update the dashboard in home
     loadCategories(); // load the categories
     loadArchivedCategories(); // load archived categories if any
-    loadExpenses(); // load expenses
+    loadExpenses(defaultExpenseFilters); // load expenses
+    setSortingSelections(defaultExpenseFilters); //
     loadAllGraphics(); // load all graphics
 
 

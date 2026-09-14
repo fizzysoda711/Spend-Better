@@ -10,7 +10,7 @@
   <body>
     <!-- side bar box and buttons -->
     <aside id="sidebar" class="column">
-      <button class="home-button sidebar-icon-button">
+      <button class="home-button sidebar-icon-button" title="Dashboard">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
             <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -18,7 +18,7 @@
       </button>
       
       <!-- categories page button -->
-      <button class="categories-button sidebar-button sidebar-icon-button">
+      <button class="categories-button sidebar-button sidebar-icon-button" title="Categories & Budgets">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 5a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2.5a1.5 1.5 0 0 1 1.2.6l.6.8a1.5 1.5 0 0 0 1.2.6z"/>
             <path d="M3 8.268a2 2 0 0 0-1 1.738V19a2 2 0 0 0 2 2h11a2 2 0 0 0 1.732-1"/>
@@ -26,7 +26,7 @@
       </button>
 
       <!-- savings page button -->
-      <button class="savings-button sidebar-button sidebar-icon-button">
+      <button class="hidden savings-button sidebar-button sidebar-icon-button">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/>
             <path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/>
@@ -37,7 +37,7 @@
       </button>
 
       <!-- expenses page button -->
-      <button class="expenses-button sidebar-button sidebar-icon-button">
+      <button class="expenses-button sidebar-button sidebar-icon-button" title="Expenses">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 18H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5"/>
             <path d="m16 19 3 3 3-3"/>
@@ -52,7 +52,7 @@
       <section class="sidebar-bottom">
         <div class="sidebar-line"></div>
 
-        <button class="settings-button sidebar-icon-button">
+        <button class="settings-button sidebar-icon-button" title="Settings">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/>
               <circle cx="12" cy="12" r="3"/>
@@ -114,7 +114,7 @@
         <!-- categories title and new category button -->
         <div class="categories-section-top-bar row vertical-center">
           <p class="categories-section-title">Categories</p>
-          <button class="new-category-button full-center">
+          <button class="new-category-button full-center" title="Add New Category">
             <h2>+</h2>
           </button>
         </div>
@@ -129,12 +129,12 @@
               <p class="make-new-category-budget">Budget: <input class="make-new-category-budget-input" type="text" inputmode="numeric" placeholder="Enter your budget"></p>
               <p class="make-new-category-budget">Color: <input class="make-new-category-color-input" type="color"></p>
               <div class="make-new-category-buttons">
-                <button class="save-new-category-button">
+                <button class="save-new-category-button" title="Save">
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 6 9 17l-5-5"/>
                   </svg>
                 </button>
-                <button class="cancel-new-category-button">
+                <button class="cancel-new-category-button" title="Cancel">
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
                   </svg>
@@ -196,9 +196,8 @@
 
           <!-- expenses section header buttons -->
           <div class="expenses-list-top-bar-buttons row vertical-center">
-
             <!-- to create new expense -->
-            <button class="new-expense-button full-center">
+            <button class="new-expense-button full-center" title="Add New Expense">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 12h14"/>
                 <path d="M12 5v14"/>
@@ -206,7 +205,7 @@
             </button>
 
             <!-- expenses sorting button -->
-            <button class="sort-expenses-button full-center">
+            <button class="sort-expenses-button full-center" title="Sort Expenses">
               <svg class="sort-expenses-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/>
               </svg>
@@ -241,13 +240,13 @@
                 maxlength="400"></textarea>
             </p>
 
-            <div class="new-expense-buttons verical-center">
+            <div class="new-expense-buttons verical-center" title="Save">
               <button class="save-new-expense-button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 6 9 17l-5-5"/>
                 </svg>
               </button>
-              <button class="cancel-new-expense-button">
+              <button class="cancel-new-expense-button" title="Cancel">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
                 </svg>
@@ -258,7 +257,7 @@
 
           </div>
 
-          <div class="expenses-list">
+          <div class="expenses-list column">
             
           </div>
 
@@ -270,13 +269,13 @@
               <h3 class="expenses-sorting-title">Sorting</h3>
 
               <!-- to save or cancel new expense sorting selections -->
-              <div class="expense-sorting-application-buttons horizontal-center row">
+              <div class="expense-sorting-application-buttons horizontal-center row" title="Apply selections">
                 <button class="save-new-expense-sorting-button">
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 6 9 17l-5-5"/>
                   </svg>
                 </button>
-                <button class="cancel-new-expense-sorting-button">
+                <button class="cancel-new-expense-sorting-button" title="Cancel selections">
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
                   </svg>
@@ -341,17 +340,17 @@
 
                 <p class="expenses-sorting-section-header">Order by Date</p>
                   <label class="expenses-sorting-subheader">
-                    <input type="radio" name="expenses-sorting-order-by" value="date-old-first" checked>
+                    <input type="radio" name="expenses-sorting-order-by" value="date-new-first" checked>
                     Newest first
                   </label>
                   <label class="expenses-sorting-subheader">
-                    <input type="radio" name="expenses-sorting-order-by" value="date-new-first">
+                    <input type="radio" name="expenses-sorting-order-by" value="date-old-first">
                     Oldest first
                   </label>
 
                 <p class="expenses-sorting-info-subheader">*Note: Only one order option can be selected at once</p>
 
-                <p class="expense-sorting-error-message expense-sorting-by-date-error-message">Error: Unspecified</p>
+                <p class="expense-sorting-error-message expense-sorting-by-date-error-message hidden">Error: Unspecified</p>
               </div>
 
               <!-- expenses sorting by category dropdown -->
@@ -442,6 +441,8 @@
                   </label>
               </div>
 
+              <!-- reset to default sorting button -->
+               <button class="reset-sorting-button">Reset Sorting to Default</button>
             </div>
 
 

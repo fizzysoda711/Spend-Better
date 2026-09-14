@@ -70,9 +70,7 @@
 
 .expenses-list-whole
 {
-    padding: 20px;
-
-    height: calc(100vh - 190px);
+    height: calc(100vh - 150px);
     overflow-y: auto;
 }
 
@@ -87,8 +85,7 @@
     background-color: var(--color-accent-dark);
     border-radius: 10px;
     
-    margin-top: 0px;
-    margin-bottom: 20px;
+    margin: 20px;
     
     font-size: 18px;
 
@@ -316,7 +313,7 @@
     bottom: 0;
 
     width: 229px;
-    height: calc(100vh - 196px);
+    height: calc(100vh - 196px - 35px);
 
     margin: 0;
     padding: 0;
@@ -512,4 +509,371 @@ input[type="checkbox"]
 
     margin-top: 15px;
     margin-bottom: 0;
+}
+
+.reset-sorting-button
+{
+    position: fixed;
+
+    bottom: 0px;
+
+    background-color: transparent;
+    color: var(--color-accent-light);
+
+    width: 225px;
+    height: 35px;
+    min-height: 35px;
+
+    font-size: 13px;
+    font-style: bold;
+
+    border: none;
+    border-radius: 0px;
+
+    outline-style: solid;
+    outline-color: var(--color-background);
+    outline-width: 2px;
+
+    margin-top: auto;
+}
+.reset-sorting-button:hover
+{
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.expense-box
+{
+    display: flex;
+    align-items: center;
+
+    width: 440px;
+    height: 60px;
+
+    
+    min-height: 30px;
+
+    height: auto;
+    width: auto;
+
+    padding: 5px;
+
+    margin-top: 0;
+    margin-bottom: 0;
+
+    color: var(--color-accent-dark);
+
+    outline: solid;
+    outline-color: var(--color-background);
+    outline-width: 2px;
+}
+
+.expense-box-row-1,
+.expense-box-row-2
+{
+    display: flex;
+
+    height: 30px;
+    width: 100%;
+
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.expense-box-row-2
+{
+    height: auto;
+}
+
+.expense-category-and-color
+{
+    width: 150px;
+    display: flex;
+    flex-shrink: 0;
+}
+
+.expense-category-color
+{
+    margin-left: 15px;
+    margin-bottom: 2px;
+
+    height: 18px;
+    min-height: 18px;
+
+    width: 15px;
+    min-width: 15px;
+}
+.expense-category
+{
+    color: var(--color-text);
+    margin-left: 8px;
+    margin-right: 5px;
+}
+.expense-amount
+{
+    color: var(--color-accent-light);
+
+    width: 110px;
+
+    text-align: end;
+    
+}
+.expense-date
+{
+    color: var(--color-text);
+
+    width: 90px;
+
+    
+    text-align: end;
+}
+
+.expense-note-visibility-button
+{
+    background-color: transparent;
+    border: none;
+    color: var(--color-accent-light);
+
+    height: 26px;
+    width: 32px;
+
+    border-radius: 5px;
+
+    margin-left: auto;
+}
+.expense-note-visibility-button:hover
+{
+    background-color: var(--color-accent-dark);
+}
+
+.expense-note
+{
+    background-color: var(--color-accent-dark);
+    
+    border: none;
+    border-radius: 5px;
+
+    padding: 8px;
+
+    gap: 7px;
+
+    margin-left: 11px;
+    margin-right: 11px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+
+    color: var(--color-text);
+
+    font-size: 13px;
+    text-align: left;
+}
+.expense-options
+{
+    display: flex;
+    background-color: transparent;
+
+    border: none;
+    border-radius: 10px;
+
+    height: 35px;
+    width: 28px;
+
+    margin-left: 5px;
+    margin-right: 11px;
+    margin-top: 2.5px;
+    margin-bottom: 2.5px;
+}
+.expense-options:hover
+{
+    color: var(--color-accent-dark);
+    border: none;
+    border-radius: 10px;
+}
+
+.expense-options-icon
+{
+    color: var(--color-text);
+}
+
+.expense-options-box-wrapper
+{
+    position: relative;
+    overflow: visible;
+}
+
+.expense-options-box
+{
+    position: absolute;
+    top: 2px;
+    right: -2px;
+    z-index: 20;
+
+    padding: 2px;
+
+    border-radius: 10px;
+
+    background-color: var(--color-black);
+
+    overflow: hidden;
+}
+
+.expense-options-box-button
+{
+    border-radius: 0px;
+    border: none;
+
+    font-size: 10px;
+    height: 30px;
+
+    color: var(--color-text);
+    
+    background-color: transparent;
+}
+
+.expense-box-edit-button:hover
+{
+    color: rgba(255, 255, 255, 0.200);
+}
+
+.expense-box-delete-button
+{
+    color: rgb(144, 11, 11);
+}
+.expense-box-delete-button:hover
+{
+    color: rgba(144, 11, 11, 0.600);
+}
+
+.expense-options-main-menu
+{
+    width: 60px;
+    height: 30px;
+}
+
+.expense-options-editing-menu
+{
+    background-color: var(--color-black);
+    height: 64px;
+}
+
+.expense-editing-category-dropdown
+{
+    background-color: var(--color-aside);
+    color: var(--color-text);
+
+    border-color: var(--color-background);
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+
+    margin: 2px;
+    margin-left: 4px;
+
+    height: 25px;
+}
+
+.expense-editing-amount
+{
+    background-color: var(--color-aside);
+    color: var(--color-text);
+
+    border-color: var(--color-background);
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+
+    margin: 4px;
+
+    height: 10px;
+    width: 80px;
+
+    padding: 5px;
+}
+
+.expense-editing-date
+{
+    background-color: var(--color-aside);
+    color: var(--color-text);
+
+    border-color: var(--color-background);
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+
+    margin: 4px;
+
+    height: 10px;
+
+    padding: 5px;
+}
+
+.expense-editing-note
+{
+    background-color: var(--color-aside);
+    color: var(--color-text);
+
+    border-color: var(--color-background);
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+
+    margin: 4px;
+
+    height: 10px;
+    width: 80px;
+
+    padding: 5px;
+}
+
+.save-expense-edit-button
+{
+    color: green;
+    background: transparent;
+
+    border: none;
+
+    width: 20px;
+    height: 26px;
+
+    margin-right: 20px;
+    margin-left: auto;
+}
+.save-expense-edit-button:hover
+{
+    color: rgb(0, 66, 0);
+}
+
+.delete-are-you-sure
+{
+    height: 30px;
+}
+
+.delete-are-you-sure-message
+{
+    color: var(--color-text);
+    width: 200px;
+    margin-left: 10px;
+}
+
+.confirm-delete-expense
+{
+    border: 1px solid var(--color-text);
+    border-radius: 5px;
+
+    color: red;
+}
+.confirm-delete-expense:hover
+{
+    background-color: rgba(255, 255, 255, 0.120);
+}
+
+.cancel-delete-expense
+{
+    margin-right: 10px;
+    margin-left: 8px;
+
+    border: 1px solid var(--color-text);
+    border-radius: 5px;
+}
+.cancel-delete-expense:hover
+{
+    background-color: rgba(255, 255, 255, 0.120);
 }
