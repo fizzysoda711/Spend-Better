@@ -6,7 +6,7 @@ import { loadAllGraphics } from "./graphics.js";
 
 import { setupPageChangeButtons } from "./page_change.js";
 
-import { updateDash } from "./dashboard_page.js";
+import { updateDash, updateBudgetBar } from "./dashboard_page.js";
 
 import { loadCategories, loadArchivedCategories } from "./categories_page.js";
 
@@ -40,7 +40,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     loadExpenses(defaultExpenseFilters); // load expenses
     setSortingSelections(defaultExpenseFilters); //
     loadAllGraphics(); // load all graphics
-
+    updateBudgetBar();
 
     setInterval(updateDash, 60000); // update the dashboard every minute
 });

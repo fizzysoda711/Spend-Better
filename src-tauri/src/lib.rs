@@ -23,6 +23,7 @@ pub fn run()
         .invoke_handler(tauri::generate_handler!
         [
             get_total_budget,
+            get_total_spent,
             add_category_and_budget,
             add_category_without_budget,
             get_categories_and_budgets,
@@ -135,8 +136,15 @@ struct ExpenseFilters {
 
 // getting the sum of all the budgets to get the total budget
 #[tauri::command]
-fn get_total_budget(app: tauri::AppHandle, month: i32, year: i32) -> Result<i64, String>
+fn get_total_budget(app: tauri::AppHandle) -> Result<i64, String>
 {
+    // get the date
+    let today = Local::now();
+
+    let month = today.month() as i32;
+    let year = today.year();
+
+
     // connect to the database
     let conn = get_connection(&app)?;
 
@@ -159,7 +167,35 @@ fn get_total_budget(app: tauri::AppHandle, month: i32, year: i32) -> Result<i64,
     Ok(total_budget)
 }
 
+// getting the sum of all the expenses this month
+#[tauri::command]
+fn get_total_spent(app: tauri::AppHandle) -> Result<i64, String>
+{
+    // get the date
+    let today = Local::now();
 
+    let month = today.month() as i32;
+    let year = today.year();
+
+
+    // connect to the database
+    let conn = get_connection(&app)?;
+
+
+    // get the sum
+    let total_spent: i64 = conn.query_row
+    (
+        "SELECT COALESCE(SUM(exp_amount), 0)
+        FROM EXPENDITURES
+        WHERE exp_month = ?1
+        AND exp_year = ?2",
+        params![month, year],
+        |row| row.get(0),
+    )
+    .map_err(|error| error.to_string())?;
+
+    Ok(total_spent)
+}
 
 // -------------- CATEGORIES AND BUDGETS PAGE FUNCTIONS -------------- //
 
