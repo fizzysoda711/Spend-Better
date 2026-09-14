@@ -4,13 +4,16 @@ ER DIAGRAM <- make into hyperlink
 **Database Design**
 
 CATEGORIES
-- category_name (primary key)
-Note: Duplicate categories will not be allowed and a category (DEFAULT) will be created when trying to add an entry with no category. 
+- category_id (primary key)
+- category_name (unique)
+- category_color
+- category_is_archived (bool)
+Note: Duplicate categories will not be allowed.
 
 BUDGETS
-- category_name (primary key 1/2)
-- month and year (primary key 2/2)
-- budget
+- budget_id (primary key)
+- category_id (foreign key)
+- budget_amount
 Note: Budgets will carry over to the next month until manually changed.
 
 
