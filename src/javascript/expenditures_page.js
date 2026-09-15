@@ -68,7 +68,7 @@ export async function getDropdownCategories()
 export async function getSortingCategories()
 {
     const dropdownCategories = document.querySelector(".expense-sorting-categories-dropdown");
-    dropdownCategories.innerHTML = `<option value="all-categories">All Categories</option>`;
+    dropdownCategories.innerHTML = `<option value="">All Categories</option>`;
     
     // for non archived categories
     const categories = await invoke("get_categories_and_budgets");
@@ -262,6 +262,7 @@ export async function updateSortingSelections()
     // get relevant varaibles for sorting inputs
     const dateRadioValue = document.querySelector('input[name="expenses-sorting-filter-by-date"]:checked').value;
     const categoryDropdownValue = document.querySelector(".expense-sorting-categories-dropdown").value;
+
     const amountRadioValue = document.querySelector('input[name="expenses-sorting-filter-by-amount"]:checked').value;
     const minAmount = document.querySelector(".expense-sorting-min-amount").value; 
     const maxAmount = document.querySelector(".expense-sorting-max-amount").value;
@@ -437,9 +438,11 @@ export async function setSortingSelections(expenseFilters)
     }
 
     // set category selection
+    console.log(expenseFilters.categoryID);
+
     if (expenseFilters.categoryID == null)
     {
-        document.querySelector('.expense-sorting-categories-dropdown').text = "All Categories";
+        document.querySelector('.expense-sorting-categories-dropdown').value = "";
     }
     else if (expenseFilters.categoryID != null)
     {
@@ -1123,6 +1126,7 @@ saveSortingButton.addEventListener("click", async function () {
     if (amountSortingError.classList.contains('hidden'))
     {
         await updateSortingSelections();
+
         loadExpenses(currentExpenseFilters);
 
         document.querySelector('.expenses-sorting-section').classList.add('hidden');

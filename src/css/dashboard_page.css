@@ -60,7 +60,8 @@
 }
 .budget-bar-info
 {
-  margin: auto;
+  margin-right: auto;
+  margin-left: 40px;
   position: flex;
   color: var(--color-text);
 }
@@ -68,9 +69,12 @@
 /* home page date, budget, and amt spent */
 .dash-date
 {
-  color: var(--color-text);
+    color: var(--color-text);
+    margin: 0;
+
 }
 .dash-nums
 {
-  color: var(--color-accent-light);
+    color: var(--color-accent-light);
+    margin: 0;
 }

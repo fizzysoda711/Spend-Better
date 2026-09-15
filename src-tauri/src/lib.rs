@@ -122,6 +122,7 @@ struct ExpenseFilters {
     year: Option<i32>,
     month: Option<i32>,
     day: Option<i32>,
+    #[serde(rename = "categoryID")]
     category_id: Option<i32>,
     is_any_amount: Option<bool>,
     max_amount: Option<i64>,
@@ -734,8 +735,8 @@ fn get_expenses(app: tauri::AppHandle, filters: ExpenseFilters) -> Result<Vec<Ex
     // category filtering
     if filters.category_id.is_some()
     {
-        query.push_str("AND cat_id = ? ");
-        parameters.push(Value::Integer(filters.category_id.unwrap() as i64));
+        query.push_str("AND EXPENDITURES.cat_id = ? ");
+        parameters.push(Value::Integer((filters.category_id).unwrap() as i64));
     }
 
     // amount filtering

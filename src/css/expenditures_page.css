@@ -3,8 +3,8 @@
     position: fixed;
 
     left: 73px;
-    top: 100px;
-    bottom: 3px;
+    top: 3px;
+    bottom: 4px;
 
     width: calc(100% - 500px);
 
@@ -70,7 +70,7 @@
 
 .expenses-list-whole
 {
-    height: calc(100vh - 150px);
+    height: calc(100vh - 50px);
     overflow-y: auto;
 }
 
@@ -240,10 +240,10 @@
     position: fixed;
 
     right: 425px;
-    top: 150px;
+    top: 54px;
 
     width: 225px;
-    height: calc(100vh - 154px);
+    height: calc(100vh - 59px);
 
     border-radius: 15px 0 15px 15px;
     border: 2px solid var(--color-background);
@@ -313,7 +313,7 @@
     bottom: 0;
 
     width: 229px;
-    height: calc(100vh - 196px - 35px);
+    height: calc(100vh - 139px);
 
     margin: 0;
     padding: 0;
@@ -515,7 +515,7 @@ input[type="checkbox"]
 {
     position: fixed;
 
-    bottom: 0px;
+    bottom: 3px;
 
     background-color: transparent;
     color: var(--color-accent-light);
@@ -528,7 +528,7 @@ input[type="checkbox"]
     font-style: bold;
 
     border: none;
-    border-radius: 0px;
+    border-radius: 0px 0px 10px 15px;
 
     outline-style: solid;
     outline-color: var(--color-background);

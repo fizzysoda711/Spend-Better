@@ -127,4 +127,7 @@ export async function loadCategoriesPieChart()
             legendAndChartSpacing(20)
         ]
     });
+
+    // set the total underneath it
+    document.querySelector('.categories-pie-chart-total').value = (await invoke("get_total_budget")) / 100;
 }
