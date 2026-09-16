@@ -877,3 +877,80 @@ input[type="checkbox"]
 {
     background-color: rgba(255, 255, 255, 0.120);
 }
+
+.expense-lines
+{
+    position: fixed;
+
+    top: 0px;
+    right: 0px;
+
+    width: 363px;
+
+    margin: 20px 30px 20px 30px;
+}
+
+.expense-lines-title
+{
+    color: var(--color-accent-light);
+    margin: 0;
+    margin-bottom: 5px;
+}
+.expense-lines-total-spent
+{
+    color: var(--color-gray);
+    margin: 0;
+    margin-bottom: 40px;
+}
+
+.expenses-per-category-bars
+{
+    height: calc(100vh - 140px);
+    overflow: auto;
+}
+
+.expense-line-category
+{
+    color: var(--color-text);
+
+    font-weight: bold;
+
+    margin: 0;
+}
+.expense-line-budget
+{
+    color: var(--color-gray);
+
+    font-size: 14px;
+    font-weight: bold;
+
+    margin: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.expense-line-icon-background
+{
+    width: 363px;
+    height: 20px;
+
+    background-color: var(--color-background);
+
+    border-radius: 10px;
+}
+.expense-line-icon
+{
+    width: 363px;
+    height: 20px;
+
+    border-radius: 10px;
+
+    margin-top: -20px;
+}
+.expense-line-spent-and-left
+{
+    justify-content: space-between;
+    color: var(--color-gray);
+    font-size: 12px;
+
+    margin-bottom: 20px;
+}

@@ -41,6 +41,40 @@ function legendAndChartSpacing(space)
     };
 }
 
+function getLastSixMonths()
+{
+    let now = new Date();
+    
+    let year = now.getFullYear();
+    let month = now.getMonth();
+
+    let monthShorthands = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ]
+
+    let lastSixMonths = [];
+
+    for (i = 0; i < 6; i++)
+    {
+        if (month == -1) { month = 12; }
+
+        lastSixMonths.push(monthShorthands(month))
+        month = month - 1;
+    }
+
+    return lastSixMonths;
+}
 
 // for the categories page
 
@@ -131,3 +165,11 @@ export async function loadCategoriesPieChart()
     // set the total underneath it
     document.querySelector('.categories-pie-chart-total').value = (await invoke("get_total_budget")) / 100;
 }
+
+/* export async function loadBudgetsOverTime()
+{
+    const chart = document.querySelector(".budgets-bar-chart");
+
+    // use function to get budget
+
+} */

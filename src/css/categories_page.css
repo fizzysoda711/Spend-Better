@@ -428,7 +428,7 @@
     width: 425px;
     height: 100vh;
 
-    right: 0;
+    right: 0px;
 
     overflow: hidden;
     overflow-y: auto;
@@ -443,8 +443,15 @@
     margin-bottom: auto;
 }
 
-.categories-page-total
+.categories-page-pie-chart
 {
-    color: var(--color-accent-light);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.categories-pie-chart-total
+{
+    color: var(--color-text);
     margin-bottom: auto;
+    font-weight: bold;
 }

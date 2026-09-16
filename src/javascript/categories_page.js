@@ -66,7 +66,13 @@ function closeCategoriesOptionsMenu(box)
     editMenuColorInput.value = editMenuColorInput.defaultValue;
 }
 
-
+// update total budget amount
+export async function updateTotalBudgetAmount()
+{
+    let totalBudgetText = document.querySelector('.categories-pie-chart-total');
+    let totalBudget = await invoke("get_total_budget");
+    totalBudgetText.textContent = `Total Budget: $${(totalBudget / 100).toFixed(2)}`;
+}
 
 
 // pressing add category button
@@ -155,6 +161,7 @@ document.querySelector(".save-new-category-button").addEventListener("click", as
         loadCategories();
         getDropdownCategories(); // for expense creation
         loadAllGraphics();
+        updateTotalBudgetAmount();
     }
 
 });
@@ -289,6 +296,7 @@ export async function loadCategories()
             await invoke("change_category_and_budget", { category: editedCategory });
             await loadCategories();
             await loadAllGraphics();
+            await updateTotalBudgetAmount();
         });
 
         // budget inputs should only allow two decimal places and no letters
@@ -312,6 +320,7 @@ export async function loadCategories()
             await loadCategories();
             await loadArchivedCategories();
             await loadAllGraphics();
+            await updateTotalBudgetAmount();
         });
 
         // when you click the delete category button
@@ -327,6 +336,7 @@ export async function loadCategories()
                 await invoke("delete_category", { category: categoryToDelete });
                 await loadCategories();
                 await loadAllGraphics();
+                await updateTotalBudgetAmount();
             }
             catch (error) 
             {
@@ -520,6 +530,7 @@ export async function loadArchivedCategories()
             await loadCategories();
             await loadArchivedCategories();
             await loadAllGraphics();
+            await updateTotalBudgetAmount();
         });
 
         // when you click the delete category button

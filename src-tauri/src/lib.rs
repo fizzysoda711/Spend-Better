@@ -22,6 +22,8 @@ pub fn run()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler!
         [
+            get_data_per_category_for_one_month,
+            get_data_for_six_months,
             get_total_budget,
             get_total_spent,
             add_category_and_budget,
@@ -132,6 +134,142 @@ struct ExpenseFilters {
     note: Vec<String>,
 }
 
+
+#[derive(Deserialize, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ChartsStruct {
+    #[serde(rename = "categoryID")]
+    c_id: Option<i64>,
+    c_name: Option<String>,
+    c_color: Option<String>,
+    total_budget: Option<i64>,
+    total_spent: Option<i64>,
+    month: Option<i32>,
+    year: Option<i32>
+}
+
+
+// -------------- CHARTS AND GRAPHICS FUNCTIONS -------------- //
+
+// get budget data from all categories for this month
+#[tauri::command]
+fn get_data_per_category_for_one_month(app: tauri::AppHandle, month: i32, year: i32) -> Result<Vec<ChartsStruct>, String>
+{
+    let conn = get_connection(&app)?;
+
+    let mut statement = conn.prepare (
+        "SELECT
+            CATEGORIES.cat_id,
+            CATEGORIES.cat_name,
+            CATEGORIES.cat_color,
+            COALESCE(BUDGETS.bdgt_amount, 0),
+            COALESCE(SUM(EXPENDITURES.exp_amount), 0)
+        FROM CATEGORIES
+
+        LEFT JOIN BUDGETS
+            ON CATEGORIES.cat_id = BUDGETS.cat_id
+            AND BUDGETS.bdgt_year = ?1
+            AND BUDGETS.bdgt_month = ?2
+
+        LEFT JOIN EXPENDITURES
+            ON CATEGORIES.cat_id = EXPENDITURES.cat_id
+            AND EXPENDITURES.exp_year = ?3
+            AND EXPENDITURES.exp_month = ?4
+        
+        WHERE CATEGORIES.is_archived = 0
+
+        GROUP BY
+            CATEGORIES.cat_id,
+            CATEGORIES.cat_name,
+            CATEGORIES.cat_color,
+            BUDGETS.bdgt_amount",
+    )
+    .map_err(|error| error.to_string())?;
+
+    let summaries = statement.query_map(
+        params![year, month, year, month],
+        |row| {
+            Ok(ChartsStruct {
+                c_id: row.get(0)?,
+                c_name: row.get(1)?,
+                c_color: row.get(2)?,
+                total_budget: row.get(3)?,
+                total_spent: row.get(4)?,
+                month: None,
+                year: None
+            })
+        },
+    )
+    .map_err(|error| error.to_string())?;
+
+    let summaries: Vec<ChartsStruct> = summaries
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| error.to_string())?;
+
+    Ok(summaries)
+}
+
+// get budget data from
+#[tauri::command]
+fn get_data_for_six_months(app: tauri::AppHandle) -> Result<Vec<ChartsStruct>, String>
+{
+    // get the current month and year
+    let today = Local::now();
+
+    let mut month = today.month() as i32;
+    let mut year = today.year();
+
+    let conn = get_connection(&app)?;
+    let mut data: Vec<ChartsStruct> = Vec::new();
+
+    for _ in 0..6
+    {
+        let mut statement = conn.prepare (
+            "SELECT
+            (
+                SELECT COALESCE(SUM(bdgt_amount), 0)
+                FROM BUDGETS
+                WHERE bdgt_year = ?1
+                AND bdgt_month = ?2
+            ),
+            (
+                SELECT COALESCE(SUM(exp_amount), 0)
+                FROM EXPENDITURES
+                WHERE exp_year = ?3
+                AND exp_month = ?4
+            )",
+        )
+        .map_err(|error| error.to_string())?;
+
+        let summary = statement.query_row(
+            params![year, month, year, month],
+            |row| {
+                Ok(ChartsStruct {
+                    c_id: None,
+                    c_name: None,
+                    c_color: None,
+                    total_budget: Some(row.get(0)?),
+                    total_spent: Some(row.get(1)?),
+                    month: Some(month),
+                    year: Some(year)
+                })
+            },
+        )
+        .map_err(|error| error.to_string())?;
+
+        data.push(summary);
+
+        month = month - 1;
+        
+        if month == 0
+        {
+            month = 12;
+            year = year - 1;
+        }
+    }
+
+    Ok(data)
+}
 
 // -------------- DASHBOARD PAGE FUNCTIONS -------------- //
 

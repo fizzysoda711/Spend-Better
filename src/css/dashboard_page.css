@@ -1,80 +1,87 @@
 .all-dashboard
 {
-  overflow-y: auto;
-  height: calc(100vh - 100px);
+    overflow-y: auto;
+    height: calc(100vh - 100px);
 }
 
+.dash-date
+{
+    color: var(--color-gray);
 
+    font-size: 25px;
+
+    margin: 0;
+    margin-left: 30px;
+}
 
 /* home page budget bar */
 .budget-bar-all
 {
-  display: flex;
+    display: flex;
 
-  margin-left: 0px;
+    margin-top: 20px;
+    margin-left: 0px;
 }
 .budget-bar-img 
 {
-  position: relative;
+    position: relative;
 
-  width: 400px;
-  height: 400px;
+    width: 300px;
+    height: 300px;
 }
 .budget-svg
 {
-  position: absolute;
-  transform-origin: center;
-  display: flex;
-  justify-content: center;
+    position: absolute;
+    transform-origin: center;
+    display: flex;
+    justify-content: center;
 
-  stroke-width: 1.5;
-  transform: rotate(125deg);
+    stroke-width: 1.5;
+    transform: rotate(125deg);
 }
 .budget-icon-empty
 {
-  fill: none;
-  stroke: var(--color-background);
-  stroke-width: 1.5;
+    fill: none;
+    stroke: var(--color-background);
+    stroke-width: 1.5;
 }
 .budget-icon-full
 {
-  fill: none;
-  stroke: var(--color-accent-light);
-  
-  stroke-width: 1.5;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
+    fill: none;
+    stroke: var(--color-accent-light);
+    
+    stroke-width: 1.5;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
 }
 .budget-text
 {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: var(--color-text);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--color-text);
 }
 .budget-bar-amount
 {
-  color: var(--color-accent-light);
+    color: var(--color-accent-light);
 }
 .budget-bar-info
 {
-  margin-right: auto;
-  margin-left: 40px;
-  position: flex;
-  color: var(--color-text);
-}
-
-/* home page date, budget, and amt spent */
-.dash-date
-{
+    margin-right: auto;
+    margin-left: 40px;
+    position: flex;
     color: var(--color-text);
-    margin: 0;
 
+    font-weight: bold;
 }
 .dash-nums
 {
     color: var(--color-accent-light);
     margin: 0;
+
+    font-size: 25px;
 }
+
+

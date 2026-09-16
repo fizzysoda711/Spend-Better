@@ -1,4 +1,6 @@
 import { updateBudgetBar } from "./dashboard_page.js";
+import { updateTotalBudgetAmount } from "./categories_page.js";
+import { getAmountSpentPerCategory } from "./expenditures_page.js";
 
 function showPage(pageClass) {
     document.querySelectorAll(".page").forEach(function (page) {
@@ -14,8 +16,9 @@ export function setupPageChangeButtons() {
         updateBudgetBar();
     });
 
-    document.querySelector(".categories-button").addEventListener("click", function () {
+    document.querySelector(".categories-button").addEventListener("click", async function () {
         showPage(".categories-page");
+        updateTotalBudgetAmount();
     });
 
     document.querySelector(".savings-button").addEventListener("click", function () {
@@ -24,6 +27,7 @@ export function setupPageChangeButtons() {
 
     document.querySelector(".expenses-button").addEventListener("click", function () {
         showPage(".expenses-page");
+        getAmountSpentPerCategory();
     });
 
     document.querySelector(".settings-button").addEventListener("click", function () {

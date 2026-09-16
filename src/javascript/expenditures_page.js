@@ -511,9 +511,8 @@ export async function loadExpenses(expenseFilters)
         filters: expenseFilters
     });
 
-
     const container = document.querySelector(".expenses-list");
-    container.innerHTML = "";
+    container.innerHTML = '';
 
     expenses.forEach(expense => {
         const box = document.createElement("div");
@@ -796,6 +795,7 @@ export async function loadExpenses(expenseFilters)
                 editingMenu.classList.add('hidden');
                 box.querySelector('.expense-options-main-menu').classList.remove('hidden');
                 await loadExpenses(currentExpenseFilters);
+                getAmountSpentPerCategory();
             }
         });
 
@@ -831,6 +831,7 @@ export async function loadExpenses(expenseFilters)
                 box.querySelector('.expense-options-main-menu').classList.remove('hidden');
 
                 loadExpenses(currentExpenseFilters);
+                getAmountSpentPerCategory();
             }
         });
 
@@ -867,6 +868,57 @@ export async function loadExpenses(expenseFilters)
     console.log('expenses loaded')
 }
 
+// load amount spent per category
+export async function getAmountSpentPerCategory()
+{
+    const date = getDate();
+    let month = date.M;
+    let year = date.Y;
+    const summaries = await invoke("get_data_per_category_for_one_month", {month: month, year: year});
+
+    const expenseBarsBox = document.querySelector('.expenses-per-category-bars');
+    expenseBarsBox.innerHTML = '';
+
+    summaries.forEach(summary => {
+        const box = document.createElement("div");
+
+        let left;
+        let percentUsed;
+
+        if (summary.totalBudget == 0)
+        {
+            left = 0;
+            percentUsed = 100;
+        }
+        else
+        {
+            left = (summary.totalBudget - summary.totalSpent);
+            percentUsed = (summary.totalSpent / summary.totalBudget) * 100;
+        }
+
+        if (left <= 0)
+        {
+            left = 0;
+            percentUsed = 100;
+        }
+
+        box.innerHTML = 
+        `
+            <p class="expense-line-category">${summary.cName}</p>
+            <p class="expense-line-budget">Budget: $${(summary.totalBudget / 100).toFixed(2)}</p>
+            <div class="expense-line-icon-background" style="width: 100%"></div>
+            <div class="expense-line-icon" style="width: ${percentUsed}%; background-color: ${summary.cColor}"></div>
+            <div class="expense-line-spent-and-left row">
+                <p class="expense-line-spent">Spent: $${(summary.totalSpent / 100).toFixed(2)}</p>
+                <p class="expense-line-left">Left: $${(left / 100).toFixed(2)}</p>
+            </div>
+        `
+
+        expenseBarsBox.appendChild(box);
+    });
+
+    document.querySelector('.expense-lines-total-spent').textContent = `Total Spent: $${((await invoke("get_total_spent")) / 100).toFixed(2)}`;
+}
 
 // ----- EXPENDITURES PAGE SPECIFIC BEHAVIORS ----- //
 
@@ -970,6 +1022,7 @@ document.querySelector(".save-new-expense-button").addEventListener("click", asy
     {
         await closeNewExpensePopup();
         await loadExpenses(currentExpenseFilters);
+        getAmountSpentPerCategory();
     }
 });
 
