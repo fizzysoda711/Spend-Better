@@ -882,35 +882,38 @@ export async function getAmountSpentPerCategory()
     summaries.forEach(summary => {
         const box = document.createElement("div");
 
+        let leftRaw = (summary.totalBudget - summary.totalSpent) / 100;
         let left;
         let percentUsed;
 
         if (summary.totalBudget == 0)
         {
-            left = 0;
+            left = "Left: $0.00";
+            percentUsed = 100;
+        }
+
+        if (leftRaw < 0)
+        {
+            left = `Over By: $${(Math.abs(leftRaw)).toFixed(2)}`;
             percentUsed = 100;
         }
         else
         {
-            left = (summary.totalBudget - summary.totalSpent);
+            left = `Left: $${((summary.totalBudget - summary.totalSpent) / 100).toFixed(2)}`;
             percentUsed = (summary.totalSpent / summary.totalBudget) * 100;
-        }
-
-        if (left <= 0)
-        {
-            left = 0;
-            percentUsed = 100;
         }
 
         box.innerHTML = 
         `
-            <p class="expense-line-category">${summary.cName}</p>
-            <p class="expense-line-budget">Budget: $${(summary.totalBudget / 100).toFixed(2)}</p>
+            <div class="row" style="justify-content: space-between">
+                <p class="expense-line-category">${summary.cName}</p>
+                <p class="expense-line-budget">Budget: $${(summary.totalBudget / 100).toFixed(2)}</p>
+            </div>
             <div class="expense-line-icon-background" style="width: 100%"></div>
             <div class="expense-line-icon" style="width: ${percentUsed}%; background-color: ${summary.cColor}"></div>
             <div class="expense-line-spent-and-left row">
                 <p class="expense-line-spent">Spent: $${(summary.totalSpent / 100).toFixed(2)}</p>
-                <p class="expense-line-left">Left: $${(left / 100).toFixed(2)}</p>
+                <p class="expense-line-left">${left}</p>
             </div>
         `
 

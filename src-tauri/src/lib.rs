@@ -31,6 +31,7 @@ pub fn run()
             get_categories_and_budgets,
             get_archived_categories_and_budgets,
             change_category_and_budget,
+            change_archived_category,
             count_archived_categories,
             new_month_budget_transfer,
             archive_category,
@@ -60,8 +61,6 @@ fn get_database_path(app: &tauri::AppHandle) -> Result<PathBuf, String>
         .map_err(|error| error.to_string())?;
 
     let database_path = app_data_dir.join("finances.db");
-
-    println!("Database path: {}", database_path.display());
 
     Ok(database_path)
 }
@@ -585,6 +584,38 @@ fn change_category_and_budget(app: tauri::AppHandle, category: CategoryWithBudge
     Ok(())
 }
 
+// edit category with budget
+#[tauri::command]
+fn change_archived_category(app: tauri::AppHandle, category: CategoryWithBudget) -> Result<(), String>
+{
+    // connect to the database
+    let mut conn = get_connection(&app)?;
+
+    // start a transaction so data isn't half saved
+    let tx = conn.transaction()
+        .map_err(|error| error.to_string())?;
+
+    // guards for optional fields bc rust requires it
+    let catid = category.c_id.ok_or("Missing category id")?;
+
+    // change the values in CATEGORIES
+    tx.execute
+    (
+        "UPDATE CATEGORIES
+         SET cat_name = ?1,
+             cat_color = ?2
+         WHERE cat_id = ?3",
+        params![category.name, category.color, catid],
+    )
+    .map_err(|error| error.to_string())?;
+
+    // finish the transaction
+    tx.commit()
+        .map_err(|error| error.to_string())?;
+
+    Ok(())
+}
+
 #[tauri::command]
 fn new_month_budget_transfer(app: tauri::AppHandle) -> Result<(), String>
 {
@@ -597,25 +628,41 @@ fn new_month_budget_transfer(app: tauri::AppHandle) -> Result<(), String>
     // get connection to the database
     let conn = get_connection(&app)?;
 
-    conn.execute
-    (
-        "WITH most_recent_budget_month AS (
-            SELECT bdgt_year, bdgt_month
-            FROM BUDGETS
-            ORDER BY bdgt_year DESC, bdgt_month DESC
-            LIMIT 1
-        )
-        INSERT INTO BUDGETS (bdgt_month, bdgt_year, cat_id, bdgt_amount)
+    conn.execute(
+        "INSERT INTO BUDGETS (bdgt_month, bdgt_year, cat_id, bdgt_amount)
         SELECT
             ?1,
             ?2,
-            BUDGETS.cat_id,
-            BUDGETS.bdgt_amount
-        FROM BUDGETS
-        JOIN most_recent_budget_month
-            ON BUDGETS.bdgt_year = most_recent_budget_month.bdgt_year
-            AND BUDGETS.bdgt_month = most_recent_budget_month.bdgt_month;",
-        params![cur_month, cur_year]
+            category.cat_id,
+            COALESCE(old_budget.bdgt_amount, 0)
+        FROM CATEGORIES AS category
+        LEFT JOIN BUDGETS AS old_budget
+            ON category.cat_id = old_budget.cat_id
+        WHERE category.is_archived = 0
+
+        AND NOT EXISTS (
+            SELECT 1
+            FROM BUDGETS AS current_budget
+            WHERE current_budget.bdgt_month = ?1
+            AND current_budget.bdgt_year = ?2
+            AND current_budget.cat_id = old_budget.cat_id
+        )
+
+        AND NOT EXISTS (
+            SELECT 1
+            FROM BUDGETS AS newer_budget
+            WHERE newer_budget.cat_id = old_budget.cat_id
+            AND (
+                newer_budget.bdgt_year > old_budget.bdgt_year
+                OR (
+                    newer_budget.bdgt_year = old_budget.bdgt_year
+                    AND newer_budget.bdgt_month > old_budget.bdgt_month
+                )
+            )
+        )
+
+        ON CONFLICT (bdgt_month, bdgt_year, cat_id) DO NOTHING;",
+        params![cur_month, cur_year],
     )
     .map_err(|error| error.to_string())?;
 
@@ -625,6 +672,12 @@ fn new_month_budget_transfer(app: tauri::AppHandle) -> Result<(), String>
 #[tauri::command]
 fn archive_category(app: tauri::AppHandle, category: CategoryWithBudget) -> Result<(), String>
 {
+    let today = Local::now();
+
+    let month = today.month() as i32;
+    let year = today.year();
+
+
     // connect to the database
     let mut conn = get_connection(&app)?;
 
@@ -642,6 +695,16 @@ fn archive_category(app: tauri::AppHandle, category: CategoryWithBudget) -> Resu
         SET is_archived = 1
         WHERE cat_id = ?1",
         params![catid]
+    )
+    .map_err(|error| error.to_string())?;
+
+    tx.execute
+    (
+        "DELETE FROM BUDGETS
+        WHERE cat_id = ?1
+        AND bdgt_year = ?2
+        AND bdgt_month = ?3",
+        params![catid, year, month]
     )
     .map_err(|error| error.to_string())?;
 
@@ -670,6 +733,8 @@ fn unarchive_category(app: tauri::AppHandle, category: CategoryWithBudget) -> Re
         params![catid]
     )
     .map_err(|error| error.to_string())?;    
+
+    new_month_budget_transfer(app)?;
 
     Ok(())
 }

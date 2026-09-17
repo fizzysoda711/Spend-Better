@@ -1,6 +1,7 @@
 import { updateBudgetBar } from "./dashboard_page.js";
 import { updateTotalBudgetAmount } from "./categories_page.js";
 import { getAmountSpentPerCategory } from "./expenditures_page.js";
+import { loadBudgetsOverTime } from "./graphics.js";
 
 function showPage(pageClass) {
     document.querySelectorAll(".page").forEach(function (page) {
@@ -19,6 +20,7 @@ export function setupPageChangeButtons() {
     document.querySelector(".categories-button").addEventListener("click", async function () {
         showPage(".categories-page");
         updateTotalBudgetAmount();
+        loadBudgetsOverTime();
     });
 
     document.querySelector(".savings-button").addEventListener("click", function () {

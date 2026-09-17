@@ -11,6 +11,8 @@ export function updateDash()
 
     // change the dashboard month and year to match current
     document.querySelector(".dash-date").textContent = date.MN + " " + date.Y + " Analytics";
+
+    updateBudgetBar();
 }
 
 export async function updateBudgetBar()

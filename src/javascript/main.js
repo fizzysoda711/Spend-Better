@@ -40,7 +40,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     loadExpenses(defaultExpenseFilters); // load expenses
     setSortingSelections(defaultExpenseFilters); //
     loadAllGraphics(); // load all graphics
-    updateBudgetBar();
 
     setInterval(updateDash, 60000); // update the dashboard every minute
 });

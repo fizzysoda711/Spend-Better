@@ -10,5 +10,5 @@
     --color-white: white;
     --color-black: rgb(15, 15, 15);
     --color-gray: gray;
-    --color-error: red;
+    --color-error: rgb(157, 0, 0);
 }

@@ -100,12 +100,32 @@
           </div>
         </section>
 
-        <section class="spending-habits-all">
-
+        <section class="budget-vs-spent-chart-all">
+          <div class="budget-vs-spent-chart-outer-wrapper full-center column">
+            <div class="budget-vs-spent-chart-header">
+              <div class="budget-vs-spent-chart-title-and-icon row">
+                <p class="budget-vs-spent-chart-title">Budgets Vs. Expenses Variance</p>
+                <div class="budget-vs-spent-chart-info-icon" title="Variance = Total Budget - Total Spent&#10;&#10;A positive value means you were under your budget.&#10;A negative value means you went over your budget.">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 16v-4"/>
+                    <path d="M12 8h.01"/>
+                  </svg>
+                </div>
+              </div>
+              <p class="budget-vs-spent-chart-subtitle">Average Variance: $$</p>
+            </div>
+            <div class="budget-vs-spent-chart-wrapper">
+              <canvas class="budget-vs-spent-chart"></canvas>
+            </div>
+          </div>
         </section>
 
-        <section class="top-three-categories-all">
+        <section class="category-expense-summaries-section column">
+          <h3 class="category-expense-summaries-title">Category-Specific Variance</h3>
+          <div class="category-expense-summaries">
 
+          </div>
         </section>
       
       </section>
@@ -179,9 +199,11 @@
           <p class="categories-pie-chart-total horizontal-center">Total Budget: $sample</p>
         </div>
 
-        <div class="division-line"></div>
+        <div class="division-line">
+        </div>
 
         <div class="budgets-bar-chart-wrapper">
+          <p class="budgets-bar-chart-title horizontal-center">Your Budget over 6 Months</p>
           <canvas class="budgets-bar-chart horizontal-center"></canvas>
         </div>
       </div>

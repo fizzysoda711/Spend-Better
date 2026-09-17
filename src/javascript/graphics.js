@@ -6,11 +6,15 @@ import Chart from "https://cdn.jsdelivr.net/npm/chart.js@4.5.0/auto/+esm";
 
 // variables to hold the charts to avoid chart duplication
 let categoriesPieChart = null;
+let budgetsBarChart = null;
+let expensesVsBudgetsBarChart = null;
 
 // to load all graphics
 export function loadAllGraphics()
 {
     loadCategoriesPieChart();
+    loadBudgetsOverTime();
+    loadExpensesVsBudgetsOverTime();
 }
 
 // helpers
@@ -28,7 +32,7 @@ function legendAndChartSpacing(space)
             {
                 originalFit.bind(chart.legend)();
 
-                if(chart.legend.options.position == "top" || chart.legend.options.position === "bottom")
+                if(chart.legend.options.position == "bottom" || chart.legend.options.position === "top")
                 {
                     this.height += space;
                 }
@@ -36,6 +40,7 @@ function legendAndChartSpacing(space)
                 {
                     this.width += space;
                 }
+                chart.legend.options.position == "bottom";
             };
         }
     };
@@ -63,17 +68,25 @@ function getLastSixMonths()
         "Dec"
     ]
 
-    let lastSixMonths = [];
+    let summary = [];
+    let summaries = [];
 
-    for (i = 0; i < 6; i++)
+    for (let i = 0; i < 6; i++)
     {
-        if (month == -1) { month = 12; }
+        if (month == -1) { month = 12; year -= 1; }
 
-        lastSixMonths.push(monthShorthands(month))
+        let summary = {
+            monthNum: month + 1,
+            monthShorthand: monthShorthands[month],
+            year: year
+        }
+
         month = month - 1;
+
+        summaries.push(summary);
     }
 
-    return lastSixMonths;
+    return summaries;
 }
 
 // for the categories page
@@ -125,6 +138,9 @@ export async function loadCategoriesPieChart()
 
         options:
         {
+            responsive: true,
+            maintainAspectRatio: false,
+
             plugins:
             {
                 legend:
@@ -166,10 +182,303 @@ export async function loadCategoriesPieChart()
     document.querySelector('.categories-pie-chart-total').value = (await invoke("get_total_budget")) / 100;
 }
 
-/* export async function loadBudgetsOverTime()
+export async function loadBudgetsOverTime()
 {
     const chart = document.querySelector(".budgets-bar-chart");
 
-    // use function to get budget
+    const summaries = await invoke("get_data_for_six_months");
+    const budgetData = summaries.map(summary => summary.totalBudget).reverse();
+    const months = getLastSixMonths();
+    let labels = months.map(month => month.monthShorthand).reverse();
+    labels[5] = "Now";
 
-} */
+
+    if (budgetsBarChart)
+    {
+        budgetsBarChart.destroy();
+        budgetsBarChart = null;
+    }
+
+    budgetsBarChart = new Chart(chart, {
+        type: "bar",
+        data:
+        {
+            labels: labels,
+            datasets:
+            [
+                {
+                    data: budgetData,
+                    backgroundColor: "rgb(90, 121, 88)",
+
+                    borderRadius:
+                    {
+                        topLeft: 8,
+                        topRight: 8,
+                        bottomLeft: 0,
+                        bottomRight: 0
+                    }
+                }
+            ]
+        },
+
+        options:
+        {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins:
+            {
+                legend:
+                {
+                    display: false
+                },
+
+                tooltip:
+                {
+                    callbacks:
+                    {
+                        label: function(context)
+                        {
+                            return `$${(context.raw / 100).toFixed(2)}`;
+                        }
+                    }
+                }
+            },
+
+            scales:
+            {
+                y:
+                {
+                    ticks:
+                    {
+                        color: "gray",
+
+                        callback: function(value)
+                        {
+                            return ` $${(value / 100).toFixed(0)}`;
+                        }
+                    },
+
+
+                    grid:
+                    {
+                        color: "rgba(255, 255, 255, 0.1)"
+                    }
+                },
+
+                x:
+                {
+                    ticks:
+                    {
+                        color: "gray"
+                    },
+
+                    grid:
+                    {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+    
+}
+
+export async function loadExpensesVsBudgetsOverTime()
+{
+    const chart = document.querySelector(".budget-vs-spent-chart");
+
+    const summaries = await invoke("get_data_for_six_months");
+
+    const budgets = summaries.map(summary => summary.totalBudget).reverse();
+    const spent = summaries.map(summary => summary.totalSpent).reverse();
+    const monthShorthands = getLastSixMonths().map(date => date.monthShorthand).reverse();
+    
+    let colors = [];
+    let left = [];
+    let validAvgValues = [];
+
+    for (let i = 0; i < 6; i++)
+    {
+        if (budgets[i] - spent[i] < 0) { colors.push("rgb(157, 0, 0)"); }
+        else { colors.push("rgb(54, 111, 54)"); }
+
+        left.push((budgets[i] - spent[i]) / 100);
+    }
+
+    const maxDifference = Math.max(...left.map(Math.abs));
+
+    let average = 0;
+
+    for (let i = 0; i < 6; i++)
+    {
+        average += (budgets[i] - spent[i]);
+    }
+
+    average = average / 600;
+
+
+    if (expensesVsBudgetsBarChart)
+    {
+        expensesVsBudgetsBarChart.destroy();
+        expensesVsBudgetsBarChart = null;
+    }
+
+    expensesVsBudgetsBarChart = new Chart(chart, {
+        type: "bar",
+        data:
+        {
+            labels: monthShorthands,
+            datasets:
+            [
+                {
+                    label: "Variance",
+                    data: left,
+                    backgroundColor: colors,
+
+                    borderRadius: function(context)
+                    {
+                        // if 0 is at the bottom
+                        if (context.raw >= 0)
+                        {
+                            return {
+                                topLeft: 5,
+                                topRight: 5,
+                                bottomLeft: 0,
+                                bottomRight: 0
+                            };
+                        }
+
+                        // if 0 is at the top.
+                        return {
+                            topLeft: 0,
+                            topRight: 0,
+                            bottomLeft: 5,
+                            bottomRight: 5
+                        };
+                    },
+
+                    borderSkipped: false,
+
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.75,
+
+                    order: 1
+                }
+            ]
+        },
+
+        options:
+        {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins:
+            {
+                legend:
+                {
+                    display: false,
+
+                    labels:
+                    {
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        color: "white",
+                        padding: 30,
+                    }
+                },
+
+                tooltip:
+                {
+                    callbacks:
+                    {
+                        label: function(context)
+                        {
+                            if (context.raw < 0)
+                            {
+                                return ` - $${Math.abs(context.raw).toFixed(2)}`;
+                            }
+                            else
+                            {
+                                return ` $${(context.raw).toFixed(2)}`;
+                            }
+                        }
+                    }
+                }
+            },
+
+            scales:
+            {
+                y:
+                {
+                    suggestedMin: -maxDifference,
+                    suggestedMax: maxDifference,
+
+                    ticks:
+                    {
+                        color: "gray",
+
+                        callback: function(value)
+                        {
+                            if (value < 0)
+                            {
+                                return `- $${Math.abs(value).toFixed(0)}`;
+                            }
+
+                            return `$${value.toFixed(0)}`;
+                        }
+                    },
+
+
+                    grid:
+                    {
+                        color: function(context)
+                        {
+                            if (context.tick.value === 0)
+                            {
+                                return "rgba(255, 255, 255, 0.60)";
+                            }
+
+                            return "rgba(255, 255, 255, 0.1)";
+                        },
+
+                        lineWidth: function(context)
+                        {
+                            if (context.tick.value === 0)
+                            {
+                                return 2;
+                            }
+
+                            return 1;
+                        }
+                    }
+                },
+
+                x:
+                {
+                    ticks:
+                    {
+                        color: "gray"
+                    },
+
+                    grid:
+                    {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+
+    if (average < 0)
+    {
+        document.querySelector('.budget-vs-spent-chart-subtitle').textContent = `Average Variance: - $${Math.abs(average).toFixed(2)}`;
+    }
+    else
+    {
+        document.querySelector('.budget-vs-spent-chart-subtitle').textContent = `Average Variance: $${(average).toFixed(2)}`;
+    }
+    
+    
+}

@@ -1,7 +1,7 @@
 .all-dashboard
 {
-    overflow-y: auto;
-    height: calc(100vh - 100px);
+    overflow-y: clip;
+    height: calc(100% - 100px);
 }
 
 .dash-date
@@ -19,8 +19,10 @@
 {
     display: flex;
 
-    margin-top: 20px;
+    margin-top: 10px;
     margin-left: 0px;
+
+    width: 530px;
 }
 .budget-bar-img 
 {
@@ -69,8 +71,8 @@
 }
 .budget-bar-info
 {
-    margin-right: auto;
-    margin-left: 40px;
+    margin-left: auto;
+   
     position: flex;
     color: var(--color-text);
 
@@ -85,3 +87,95 @@
 }
 
 
+.budget-vs-spent-chart-all
+{
+    border-color: var(--color-accent-light);
+    border-width: 2px;
+    border-radius: 10px;
+
+    position: absolute;
+    left: 100px;
+    top: 410px;
+}
+.budget-vs-spent-chart-outer-wrapper
+{
+    outline-width: 3px;
+    outline-style: solid;
+    outline-color: var(--color-background); 
+
+    border-radius: 10px;
+
+    width: 500px;
+    height: 350px;
+}
+.budget-vs-spent-chart-header
+{
+    margin-bottom: 10px;
+    margin-left: 25px;
+    margin-right: auto;
+}
+.budget-vs-spent-chart-title-and-icon
+{
+    justify-content: space-between;
+    gap: 155px;
+}
+.budget-vs-spent-chart-title
+{
+    color: var(--color-text);
+
+    font-weight: bold;
+    font-size: 18px;
+
+    margin: 0;
+}
+.budget-vs-spent-chart-info-icon
+{
+    color: var(--color-accent-light);
+    margin-right: auto;
+}
+.budget-vs-spent-chart-subtitle
+{
+    color: var(--color-gray);
+
+    font-weight: bold;
+    font-size: 14px;
+
+    margin: 0;
+}
+.budget-vs-spent-chart-wrapper
+{
+    max-width: 450px;
+    min-width: 450px;
+
+    max-height: 250px;
+    min-height: 250px;
+
+    margin: 25px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+
+.category-expense-summaries-section
+{
+    width: calc(100% - 660px);
+    height: calc(100vh - 67px);
+
+    position: absolute;
+    right: 25px;
+    top: 32px;
+
+    border: 3px solid var(--color-background);
+    border-radius: 15px;
+
+    padding: 0px;
+}
+.category-expense-summaries-title
+{
+    margin: 15px;
+    
+    font-size: 20px;
+
+    color: var(--color-accent-light);
+}

@@ -919,10 +919,9 @@ input[type="checkbox"]
 }
 .expense-line-budget
 {
-    color: var(--color-gray);
+    color: var(--color-accent-light);
 
     font-size: 14px;
-    font-weight: bold;
 
     margin: 0;
     margin-top: 5px;
@@ -936,6 +935,8 @@ input[type="checkbox"]
     background-color: var(--color-background);
 
     border-radius: 10px;
+
+    margin: 0;
 }
 .expense-line-icon
 {
@@ -950,7 +951,10 @@ input[type="checkbox"]
 {
     justify-content: space-between;
     color: var(--color-gray);
-    font-size: 12px;
 
+    font-size: 14px;
+    font-weight: bold;
+
+    margin-top: -10px;
     margin-bottom: 20px;
 }

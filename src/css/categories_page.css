@@ -435,23 +435,69 @@
 
     outline: none;
     outline-color: var(--color-accent-dark);
+
+    justify-content: top;
 }
 
 .categories-page-pie-chart-wrapper
 {
-    height: 400px;
-    margin-bottom: auto;
+    max-height: 420px;
+    margin-top: 10px;
+    margin-bottom: 0;
 }
-
 .categories-page-pie-chart
 {
-    margin-left: 10px;
-    margin-right: 10px;
-}
+    margin-left: auto;
+    margin-right: auto;
 
+    max-height: 370px;
+    max-width: 370px;
+    min-height: 370px;
+    min-width: 370px;
+}
 .categories-pie-chart-total
 {
     color: var(--color-text);
-    margin-bottom: auto;
     font-weight: bold;
+    margin-bottom: 0;
+}
+
+.division-line
+{
+    position: relative;
+    flex-shrink: 0;
+
+    width: 330px;
+    height: 5px;
+    background-color: var(--color-background);
+
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    border-radius: 10px;
+}
+
+.budgets-bar-chart-title
+{
+    color: var(--color-text);
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 20px;
+}
+.budgets-bar-chart
+{
+    position: relative;
+
+    height: 100px;
+    max-height: 260px;
+
+    max-width: 350px;
+    min-width: 350px;
+
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0;
+    margin-bottom: 30px;
 }
