@@ -900,13 +900,14 @@ input[type="checkbox"]
 {
     color: var(--color-gray);
     margin: 0;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
 }
 
 .expenses-per-category-bars
 {
     height: calc(100vh - 140px);
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .expense-line-category
@@ -957,4 +958,18 @@ input[type="checkbox"]
 
     margin-top: -10px;
     margin-bottom: 20px;
+}
+
+.expenses-division-line
+{
+    position: relative;
+    flex-shrink: 0;
+    width: 370px;
+    height: 5px;
+    background-color: var(--color-aside);
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
 }

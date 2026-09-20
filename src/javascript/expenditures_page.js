@@ -877,7 +877,7 @@ export async function getAmountSpentPerCategory()
     const summaries = await invoke("get_data_per_category_for_one_month", {month: month, year: year});
 
     const expenseBarsBox = document.querySelector('.expenses-per-category-bars');
-    expenseBarsBox.innerHTML = '';
+    expenseBarsBox.innerHTML = '<div class="expenses-division-line"></div>';
 
     summaries.forEach(summary => {
         const box = document.createElement("div");
@@ -915,12 +915,16 @@ export async function getAmountSpentPerCategory()
                 <p class="expense-line-spent">Spent: $${(summary.totalSpent / 100).toFixed(2)}</p>
                 <p class="expense-line-left">${left}</p>
             </div>
+
+            <div class="expenses-division-line"></div>
         `
 
         expenseBarsBox.appendChild(box);
     });
 
     document.querySelector('.expense-lines-total-spent').textContent = `Total Spent: $${((await invoke("get_total_spent")) / 100).toFixed(2)}`;
+    
+    
 }
 
 // ----- EXPENDITURES PAGE SPECIFIC BEHAVIORS ----- //

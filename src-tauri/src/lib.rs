@@ -24,6 +24,7 @@ pub fn run()
         [
             get_data_per_category_for_one_month,
             get_data_for_six_months,
+            get_six_month_summaries_per_category,
             get_total_budget,
             get_total_spent,
             add_category_and_budget,
@@ -133,7 +134,6 @@ struct ExpenseFilters {
     note: Vec<String>,
 }
 
-
 #[derive(Deserialize, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 struct ChartsStruct {
@@ -145,6 +145,21 @@ struct ChartsStruct {
     total_spent: Option<i64>,
     month: Option<i32>,
     year: Option<i32>
+}
+
+#[derive(Deserialize, serde::Serialize)]
+struct VarianceMonthlySummary {
+    m_num: i32,
+    m_budget: i32,
+    m_spent: i32
+}
+
+#[derive(Deserialize, serde::Serialize)]
+struct CategoryVarianceChartStruct {
+    c_id: i32,
+    c_name: String,
+    c_color: String,
+    monthly_summaries: Option<Vec<VarianceMonthlySummary>>
 }
 
 
@@ -208,7 +223,7 @@ fn get_data_per_category_for_one_month(app: tauri::AppHandle, month: i32, year: 
     Ok(summaries)
 }
 
-// get budget data from
+// get budget data for all categories for the last 6 months
 #[tauri::command]
 fn get_data_for_six_months(app: tauri::AppHandle) -> Result<Vec<ChartsStruct>, String>
 {
@@ -268,6 +283,102 @@ fn get_data_for_six_months(app: tauri::AppHandle) -> Result<Vec<ChartsStruct>, S
     }
 
     Ok(data)
+}
+
+// get six month summaries for each categoy
+#[tauri::command]
+fn get_six_month_summaries_per_category(app: tauri::AppHandle) -> Result<Vec<CategoryVarianceChartStruct>, String>
+{
+    // get database connection
+    let conn = get_connection(&app)?;
+
+    let mut statement = conn.prepare
+    (
+        "SELECT 
+            cat_id,
+            cat_name,
+            cat_color
+        FROM CATEGORIES
+        WHERE CATEGORIES.is_archived = 0"
+    )
+    .map_err(|error| error.to_string())?;
+
+    let category_rows = statement.query_map(
+        [],
+        |row| {
+            Ok(CategoryVarianceChartStruct {
+                c_id: row.get(0)?,
+                c_name: row.get(1)?,
+                c_color: row.get(2)?,
+                monthly_summaries: None
+            })
+        }
+    )
+    .map_err(|error| error.to_string())?;
+
+    let mut categories = Vec::new();
+
+    for category_row in category_rows
+    {
+        let mut category = category_row.map_err(|error| error.to_string())?;
+
+        let mut summaries = Vec::new();
+
+        let today = Local::now();
+        let mut month = today.month() as i32;
+        let mut year = today.year();
+
+        for _ in 0..6
+        {
+            let mut summary = conn.prepare
+            (
+                "SELECT
+                    COALESCE(
+                        (
+                            SELECT bdgt_amount
+                            FROM BUDGETS
+                            WHERE cat_id = ?3
+                                AND bdgt_month = ?1
+                                AND bdgt_year = ?2
+                        ),
+                        0
+                    ),
+                    COALESCE(
+                        (
+                            SELECT SUM(exp_amount)
+                            FROM EXPENDITURES
+                            WHERE cat_id = ?3
+                                AND exp_month = ?1
+                                AND exp_year = ?2
+                        ),
+                        0
+                    )"
+            )
+            .map_err(|error| error.to_string())?;
+
+            let summary_row = summary.query_row(
+                params![month, year, category.c_id],
+                |row| {
+                    Ok(VarianceMonthlySummary {
+                        m_num: (month - 1),
+                        m_budget: row.get(0)?,
+                        m_spent: row.get(1)?
+                    })
+                }
+            )
+            .map_err(|error| error.to_string())?;
+
+            month = month - 1;
+            if month == 0 { year = year - 1; month = 12 }
+
+            summaries.push(summary_row);
+        }
+
+        category.monthly_summaries = Some(summaries);
+        categories.push(category);
+    }
+
+    Ok(categories)
 }
 
 // -------------- DASHBOARD PAGE FUNCTIONS -------------- //
@@ -984,11 +1095,11 @@ fn get_expenses(app: tauri::AppHandle, filters: ExpenseFilters) -> Result<Vec<Ex
     // ordering
     if filters.sort_by == "date-old-first"
     {
-        query.push_str("ORDER BY exp_year ASC, exp_month ASC, exp_day ASC");
+        query.push_str("ORDER BY exp_year ASC, exp_month ASC, exp_day ASC, exp_id DESC");
     }
     else if filters.sort_by == "date-new-first"
     {
-        query.push_str("ORDER BY exp_year DESC, exp_month DESC, exp_day DESC");
+        query.push_str("ORDER BY exp_year DESC, exp_month DESC, exp_day DESC, exp_id ASC");
     }
     else if filters.sort_by == "amount-greatest-first"
     {

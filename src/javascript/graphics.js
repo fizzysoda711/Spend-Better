@@ -15,6 +15,7 @@ export function loadAllGraphics()
     loadCategoriesPieChart();
     loadBudgetsOverTime();
     loadExpensesVsBudgetsOverTime();
+    loadExpensesVsBudgetsOverTimePerCategory();
 }
 
 // helpers
@@ -309,13 +310,19 @@ export async function loadExpensesVsBudgetsOverTime()
     const maxDifference = Math.max(...left.map(Math.abs));
 
     let average = 0;
+    let divideBy = 600;
 
     for (let i = 0; i < 6; i++)
     {
         average += (budgets[i] - spent[i]);
+
+        if (budgets[i] == 0 && spent[i] == 0)
+        {
+            divideBy = divideBy - 100;
+        }
     }
 
-    average = average / 600;
+    average = average / divideBy;
 
 
     if (expensesVsBudgetsBarChart)
@@ -481,4 +488,231 @@ export async function loadExpensesVsBudgetsOverTime()
     }
     
     
+}
+
+export async function loadExpensesVsBudgetsOverTimePerCategory()
+{   
+    const summariesDiv = document.querySelector('.category-expense-summaries');
+
+    summariesDiv.innerHTML = "";
+
+    const summaries = await invoke ("get_six_month_summaries_per_category");
+    console.log("all category summaries:", summaries);
+
+    for (const summary of summaries)
+    {
+        console.log("one category:", summary);
+        console.log("its months:", summary.monthly_summaries);
+
+
+        const box = document.createElement('div');
+        box.classList.add('column');
+        box.classList.add('category-expense-summary-chart-all');
+
+        box.innerHTML =
+        `
+            <div class="row vertical-center" style="gap: 5px">
+                <p class="category-expense-summary-chart-title-label">Category: </p>
+                <p class="category-expense-summary-chart-title" style="color: ${summary.c_color}"> ${summary.c_name}</p>
+            </div>
+            <p class="category-expense-summary-chart-subtitle"></p>
+            <div class="category-expense-summary-chart-wrapper">
+                <canvas class="category-expense-summary-chart"></canvas>
+            </div>
+        `;
+
+        const chart = box.querySelector('.category-expense-summary-chart');
+
+        const budgets = summary.monthly_summaries.map(month => month.m_budget).reverse();
+        const spent = summary.monthly_summaries.map(month => month.m_spent).reverse();
+        const monthShorthands = getLastSixMonths().map(date => date.monthShorthand).reverse();
+
+        let colors = [];
+        let left = [];
+        let validAvgValues = [];
+
+        for (let i = 0; i < 6; i++)
+        {
+            if (budgets[i] - spent[i] < 0) { colors.push("rgb(157, 0, 0)"); }
+            else { colors.push("rgb(54, 111, 54)"); }
+
+            left.push((budgets[i] - spent[i]) / 100);
+        }
+
+        const maxDifference = Math.max(...left.map(Math.abs));
+
+        let average = 0;
+        let divideBy = 600;
+
+        for (let i = 0; i < 6; i++)
+        {
+            average += (budgets[i] - spent[i]);
+
+            if (budgets[i] == 0 && spent[i] == 0)
+            {
+                divideBy = divideBy - 100;
+            }
+        }
+
+        average = average / divideBy;
+
+
+        expensesVsBudgetsBarChart = new Chart(chart, {
+            type: "bar",
+            data:
+            {
+                labels: monthShorthands,
+                datasets:
+                [
+                    {
+                        label: "Variance",
+                        data: left,
+                        backgroundColor: colors,
+
+                        borderRadius: function(context)
+                        {
+                            // if 0 is at the bottom
+                            if (context.raw >= 0)
+                            {
+                                return {
+                                    topLeft: 5,
+                                    topRight: 5,
+                                    bottomLeft: 0,
+                                    bottomRight: 0
+                                };
+                            }
+
+                            // if 0 is at the top.
+                            return {
+                                topLeft: 0,
+                                topRight: 0,
+                                bottomLeft: 5,
+                                bottomRight: 5
+                            };
+                        },
+
+                        borderSkipped: false,
+
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.75,
+
+                        order: 1
+                    }
+                ]
+            },
+
+            options:
+            {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins:
+                {
+                    legend:
+                    {
+                        display: false,
+
+                        labels:
+                        {
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            color: "white",
+                            padding: 30,
+                        }
+                    },
+
+                    tooltip:
+                    {
+                        callbacks:
+                        {
+                            label: function(context)
+                            {
+                                if (context.raw < 0)
+                                {
+                                    return ` - $${Math.abs(context.raw).toFixed(2)}`;
+                                }
+                                else
+                                {
+                                    return ` $${(context.raw).toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                },
+
+                scales:
+                {
+                    y:
+                    {
+                        suggestedMin: -maxDifference,
+                        suggestedMax: maxDifference,
+
+                        ticks:
+                        {
+                            color: "gray",
+
+                            callback: function(value)
+                            {
+                                if (value < 0)
+                                {
+                                    return `- $${Math.abs(value).toFixed(0)}`;
+                                }
+
+                                return `$${value.toFixed(0)}`;
+                            }
+                        },
+
+
+                        grid:
+                        {
+                            color: function(context)
+                            {
+                                if (context.tick.value === 0)
+                                {
+                                    return "rgba(255, 255, 255, 0.60)";
+                                }
+
+                                return "rgba(255, 255, 255, 0.1)";
+                            },
+
+                            lineWidth: function(context)
+                            {
+                                if (context.tick.value === 0)
+                                {
+                                    return 2;
+                                }
+
+                                return 1;
+                            }
+                        }
+                    },
+
+                    x:
+                    {
+                        ticks:
+                        {
+                            color: "gray"
+                        },
+
+                        grid:
+                        {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        summariesDiv.appendChild(box);
+
+        if (average < 0)
+        {
+            box.querySelector('.category-expense-summary-chart-subtitle').textContent = `Average Variance: - $${Math.abs(average).toFixed(2)}`;
+        }
+        else
+        {
+            box.querySelector('.category-expense-summary-chart-subtitle').textContent = `Average Variance: $${(average).toFixed(2)}`;
+        }
+
+    }
 }
