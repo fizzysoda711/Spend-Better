@@ -704,6 +704,7 @@ export async function loadExpensesVsBudgetsOverTimePerCategory()
         });
 
         summariesDiv.appendChild(box);
+        box.dataset.averageVariance = average;
 
         if (average < 0)
         {
@@ -713,6 +714,18 @@ export async function loadExpensesVsBudgetsOverTimePerCategory()
         {
             box.querySelector('.category-expense-summary-chart-subtitle').textContent = `Average Variance: $${(average).toFixed(2)}`;
         }
+    }
 
+    // sort boxes by variance (low to high)
+    const boxes = [...summariesDiv.querySelectorAll('.category-expense-summary-chart-all')];
+
+    boxes.sort((a, b) =>
+    {
+        return Number(a.dataset.averageVariance) - Number(b.dataset.averageVariance);
+    });
+
+    for (const box of boxes)
+    {
+        summariesDiv.appendChild(box);
     }
 }
