@@ -1,7 +1,13 @@
 import { updateBudgetBar } from "./dashboard_page.js";
 import { updateTotalBudgetAmount } from "./categories_page.js";
 import { getAmountSpentPerCategory } from "./expenditures_page.js";
-import { loadBudgetsOverTime } from "./graphics.js";
+import 
+{ 
+    loadBudgetsOverTime, 
+    loadExpensesVsBudgetsOverTime,
+    loadExpensesVsBudgetsOverTimePerCategory 
+}
+from "./graphics.js";
 
 function showPage(pageClass) {
     document.querySelectorAll(".page").forEach(function (page) {
@@ -15,6 +21,8 @@ export function setupPageChangeButtons() {
     document.querySelector(".home-button").addEventListener("click", function () {
         showPage(".home-page");
         updateBudgetBar();
+        loadExpensesVsBudgetsOverTime();
+        loadExpensesVsBudgetsOverTimePerCategory();
     });
 
     document.querySelector(".categories-button").addEventListener("click", async function () {

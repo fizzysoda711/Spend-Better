@@ -482,12 +482,14 @@ export async function loadExpensesVsBudgetsOverTime()
     {
         document.querySelector('.budget-vs-spent-chart-subtitle').textContent = `Average Variance: - $${Math.abs(average).toFixed(2)}`;
     }
-    else
+    else if (average > 0)
     {
         document.querySelector('.budget-vs-spent-chart-subtitle').textContent = `Average Variance: $${(average).toFixed(2)}`;
     }
-    
-    
+    else
+    {
+        document.querySelector('.budget-vs-spent-chart-subtitle').textContent = `Average Variance: $0.00`;
+    }
 }
 
 export async function loadExpensesVsBudgetsOverTimePerCategory()
