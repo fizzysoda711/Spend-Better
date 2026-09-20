@@ -627,14 +627,26 @@ export async function loadExpensesVsBudgetsOverTimePerCategory()
                         {
                             label: function(context)
                             {
+                                const index = context.dataIndex;
+
+                                const budget = budgets[index] / 100;
+                                const amountSpent = spent[index] / 100;
+                                let varianceText = context.raw;
+
                                 if (context.raw < 0)
                                 {
-                                    return ` - $${Math.abs(context.raw).toFixed(2)}`;
+                                    varianceText = ` - $${Math.abs(context.raw).toFixed(2)}`;
                                 }
                                 else
                                 {
-                                    return ` $${(context.raw).toFixed(2)}`;
+                                    varianceText = ` $${(context.raw).toFixed(2)}`;
                                 }
+
+                                return [
+                                    `Variance: ${varianceText}`,
+                                    `Budget: $${budget.toFixed(2)}`,
+                                    `Spent: $${amountSpent.toFixed(2)}`
+                                ];
                             }
                         }
                     }
