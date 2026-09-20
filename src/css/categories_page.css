@@ -486,12 +486,16 @@
     margin: 0;
     margin-bottom: 20px;
 }
+.budgets-bar-chart-direct-wrapper
+{
+    height: calc(100vh - 500px);
+}
 .budgets-bar-chart
 {
     position: relative;
 
-    height: 100px;
-    max-height: 260px;
+    height: calc(100vh - 400px);
+    max-height: 380px;
 
     max-width: 350px;
     min-width: 350px;
