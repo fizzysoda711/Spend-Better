@@ -559,7 +559,7 @@ export async function loadExpensesVsBudgetsOverTimePerCategory()
         average = average / divideBy;
 
 
-        expensesVsBudgetsBarChart = new Chart(chart, {
+        expensesVsBudgetsBarChartPerCategory = new Chart(chart, {
             type: "bar",
             data:
             {
