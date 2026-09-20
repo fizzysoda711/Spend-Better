@@ -2,6 +2,9 @@
 
 Spend Better is a local-first desktop budgeting app that helps users track expenses, preserve budget history, and understand spending trends over time.
 
+**To Download**
+Click on the latest release and follow the instructions.
+
 **Features**
 - **Local-first persistence:** budgets, categories, expenses, notes, and historical monthly budgets live in a local SQLite database and remain available after closing, updating, or reinstalling the app.
 - **Budget history is preserved:** each month has its own budget records, so past charts don’t change when a user edits today’s budget.
