@@ -23,9 +23,18 @@ export async function updateBudgetBar()
     const left = budget - spent;
     let offset;
 
-    // if left is negative the bar is 100% full
+    if (spent == 0)
+    {
+        document.querySelector(".budget-icon-full").classList.add('hidden');
+    }
+    else
+    {
+        document.querySelector(".budget-icon-full").classList.remove('hidden');
+    }
+
     if (left < 0)
     {
+        // if left is negative the bar is 100% full
         offset = 0;
         document.querySelector(".budget-bar-amount").textContent = "- $" + Math.abs(left).toFixed(2);
     }

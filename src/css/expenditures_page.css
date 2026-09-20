@@ -416,7 +416,7 @@ input[type="checkbox"]
     border-width: 2px;
     color: var(--color-text);
 
-    border-radius: 10px;
+    border-radius: 5px;
 
     height: 25px;
 }

@@ -1,0 +1,13 @@
+{
+  "app": {
+    "windows": [
+      {
+        "title": "Spend Better Windows",
+        "width": 8000,
+        "height": 10000,
+        "minWidth": 1155,
+        "minHeight": 1050
+      }
+    ]
+  }
+}
