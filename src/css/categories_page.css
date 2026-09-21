@@ -489,12 +489,13 @@
 .budgets-bar-chart-direct-wrapper
 {
     height: calc(100vh - 500px);
+    min-height: 260px;
 }
 .budgets-bar-chart
 {
     position: relative;
 
-    height: calc(100vh - 400px);
+    height: 100%;
     max-height: 380px;
 
     max-width: 350px;
